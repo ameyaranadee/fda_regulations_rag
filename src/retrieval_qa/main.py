@@ -39,7 +39,7 @@ def upload_pdfs_to_vector_store(
             logger.error("Failed to create vector store")
             return {"error": "Failed to create vector store"}
         
-        upload_stats = vector_store_manager.upload_pdf_files_to_vector_store(
+        upload_stats = vector_store_manager.upload_multiple_pdfs(
             vector_store_details["id"], 
             pdf_dir
         )

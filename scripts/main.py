@@ -1,6 +1,7 @@
 import argparse
+import sys, os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from src.retrieval_qa.main import upload_pdfs_to_vector_store, create_query_interface
-
 
 def main():
     parser = argparse.ArgumentParser(description="FDA Regulations QA CLI")
@@ -42,7 +43,7 @@ def main():
 
     elif args.command == "ask":
         interface = create_query_interface(args.store_id)
-        response = interface.ask_with_llm(args.query)
+        response = interface.search_with_llm(args.query)
         print(f"Response: {response['response']}")
         print(f"Files used: {response['files_used']}")
 

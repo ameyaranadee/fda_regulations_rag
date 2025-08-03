@@ -28,19 +28,18 @@ class VectorStoreManager:
 
     def upload_single_pdf(self, file_path: str, vector_store_id: str) -> Dict:
         """Upload a single PDF file to the vector store"""
+        file_name = os.path.basename(file_path)
         try:
-            file_name = os.path.basename(file_path)
-            try:
-                file_response = self.client.files.create(
-                    file=open(file_path, 'rb'),
-                    purpose="retrieval"
-                )
-                attach_response = self.client.vector_stores.files.create(
-                    vector_store_id=vector_store_id,
-                    file_id=file_response.id
-                )
+            file_response = self.client.files.create(
+                file=open(file_path, 'rb'),
+                purpose="assistants"
+            )
+            attach_response = self.client.vector_stores.files.create(
+                vector_store_id=vector_store_id,
+                file_id=file_response.id
+            )
 
-                return {"file": file_name, "status": "success", "file_id": file_response.id}
+            return {"file": file_name, "status": "success", "file_id": file_response.id}
         except Exception as e:
             print(f"Error with {file_name}: {str(e)}")
             return {"file": file_name, "status": "failed", "error": str(e)}
@@ -64,7 +63,7 @@ class VectorStoreManager:
                 executor.submit(self.upload_single_pdf, file_path, vector_store_id): file_path for file_path in pdf_files
             }
 
-            for future in tqdm(concurrent.future.as_completed(futures), total=len(pdf_files)):
+            for future in tqdm(concurrent.futures.as_completed(futures), total=len(pdf_files)):
                 result = future.result()
                 if result["status"] == "success":
                     stats["successful_uploads"] += 1
